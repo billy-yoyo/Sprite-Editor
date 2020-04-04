@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="js/utils/i18n.js"></script>
+    <script src="js/utils/utils.js"></script>
+
+    <script src="js/state/main.js"></script>
+    <script src="js/state/stateStorage.js"></script>
+
+    <script src="js/common/dialogs.js"></script>
+    <script src="js/common/dragAndDrop.js"></script>
+    <script src="js/common/form.js"></script>
+    <script src="js/common/popup.js"></script>
+    <script src="js/common/popup.js"></script>
+    <script src="js/common/toolbar.js"></script>
+
+    <script src="js/components/animationControls.js"></script>
+    <script src="js/components/colourList.js"></script>
+    <script src="js/components/frameList.js"></script>
+    <script src="js/components/pixelDisplay.js"></script>
+    <script src="js/components/spritelist.js"></script>
+    <script src="js/components/tabbar.js"></script>
+
+    <script src="js/tabs/fileTab.js"></script>
+    <script src="js/tabs/viewTab.js"></script>
+    <script src="js/tabs/frameTab.js"></script>
+</head>
+<body onload="main()">
+    <input id="file_input" type="file" style="display: none;">
+    <div class="root" id="root">
+        <div class="toolbar" id="toolbar">
+        </div>
+        <div class="sprite_view">
+            <div class="list_view">
+                <div class="list_container"> 
+                    <div class="list_title" id="sprite_list_title"></div>
+                    <div class="list" id="sprite_list"></div>
+                </div>
+                <div class="list_container"> 
+                    <div class="list_title" id="frame_list_title"></div>
+                    <div class="list" id="frame_list"></div>
+                </div>
+            </div>
+            
+
+            <div class="tab_view">
+                <div class="tabbar" id="tabbar"></div>
+                
+                <div class="frame_view">
+                    <div class="canvas_container" id="canvas_container">
+                        <div class="pixel_table" id="pixel_table">
+                        </div>
+                    </div>
+                    <div class="colour_list" id="colour_list">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>
