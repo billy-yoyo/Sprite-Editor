@@ -81,7 +81,6 @@ function deleteFrame(frame) {
             const siblings = getChildFrames(frame.parentId);
             if (siblings.length === 1) {
                 neighbourId = frame.parentId;
-                console.log(neighbourId);
             } else {
                 const childIndex = getFrameIndexFromId(frame.id, siblings);
                 neighbour = findNearestNeighbour(siblings, childIndex, () => true);

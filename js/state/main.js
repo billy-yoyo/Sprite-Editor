@@ -19,12 +19,15 @@ const State = {
         spriteTab: null
     },
     ViewState: {
-        pixelSize: 1
+        ctx: null,
+        pixelSize: 1,
+        lastMouse: { x: 0, y: 0 },
+        lastGridCoords: { x: 0, y: 0}
     },
     elts: {
         colourList: null,
         frameList: null,
-        pixelTable: null,
+        pixelCanvas: null,
         toolbar: null,
         root: null,
         fileInput: null,
@@ -203,7 +206,7 @@ function main() {
 
     State.elts.colourList = document.getElementById('colour_list');
     State.elts.frameList = document.getElementById('frame_list');
-    State.elts.pixelTable = document.getElementById('pixel_table');
+    State.elts.pixelCanvas = document.getElementById('pixel_canvas');
     State.elts.toolbar = document.getElementById('toolbar');
     State.elts.root = document.getElementById('root');
     State.elts.fileInput = document.getElementById('file_input');
@@ -220,11 +223,9 @@ function main() {
 
     State.ViewState.pixelSize = parseInt(localStorage.getItem('pixelSize') || 30);
 
-    disableContextMenu(State.elts.pixelTable);
-
+    initPixelDisplay();
     initSpriteList();
     initFrameList();
-    initPixelDisplay();
     createGlobalCloseDropdownListener();
 
     createFileTab();
@@ -238,5 +239,5 @@ function main() {
     loadSpritesFromStorage();
     saveSpritesToStorage();
 
-    spawnAnimationControls();
+    // openAnimationControls();
 }

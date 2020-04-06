@@ -148,9 +148,7 @@ function closeAnimationControls() {
 }
 
 function updateAnimationControls() {
-    if (!State.AnimationState.controlsPopup) {
-        openAnimationControls();
-    } else {
+    if (State.AnimationState.controlsPopup) {
         updatePopupInnerElt(State.AnimationState.controlsPopup, createAnimationControls());
     }
 }

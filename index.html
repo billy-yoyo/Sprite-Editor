@@ -29,6 +29,8 @@
     <script src="js/tabs/fileTab.js"></script>
     <script src="js/tabs/viewTab.js"></script>
     <script src="js/tabs/frameTab.js"></script>
+
+    <script src="js/canvas/pixelCanvas.js"></script>
 </head>
 <body onload="main()">
     <input id="file_input" type="file" style="display: none;">
@@ -53,8 +55,7 @@
                 
                 <div class="frame_view">
                     <div class="canvas_container" id="canvas_container">
-                        <div class="pixel_table" id="pixel_table">
-                        </div>
+                        <canvas class="pixel_canvas" id="pixel_canvas"></canvas>
                     </div>
                     <div class="colour_list" id="colour_list">
                     </div>
