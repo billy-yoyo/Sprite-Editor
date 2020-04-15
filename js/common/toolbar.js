@@ -105,8 +105,6 @@ function spawnDropdown(parent, anchor, axis, actions, keepOtherDropdowns) {
         }
     }
 
-    console.log(rect);
-
     if (x < 0) {
         x = 0;
     } else if (x + dropdownRect.width > window.innerWidth) {
@@ -118,8 +116,6 @@ function spawnDropdown(parent, anchor, axis, actions, keepOtherDropdowns) {
     } else if (y + dropdownRect.height > window.innerHeight) {
         y = window.innerHeight - dropdownRect.height;
     }
-
-    console.log(`x=${x}, y=${y}`);
 
     dropdown.elt.style.left = '' + x + 'px';
     dropdown.elt.style.top = '' + y + 'px';

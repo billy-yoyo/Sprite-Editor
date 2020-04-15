@@ -8,7 +8,7 @@ const I18N = {
             'create_sprite_name': 'Name',
             'create_sprite_width': 'Width',
             'create_sprite_height': 'Height',
-            'create_sprite_frames': 'Frames',
+            'create_sprite_frames': 'Layers',
 
             'create_project_title': 'New project',
             'create_project_button': 'Create Project',
@@ -27,7 +27,7 @@ const I18N = {
             'view_tab_change_pixel_size': 'Change Pixel Size...',
             'view_tab_animation_controls': 'Animation Controls...',
 
-            'frame_tab': 'Frame',
+            'frame_tab': 'Layer',
             'frame_tab_change_dimensions': 'Change Dimensions...',
 
             'change_frame_dimensions_title': 'Change dimensions',
@@ -42,14 +42,14 @@ const I18N = {
 
             'default_form_submit_button': 'Submit',
 
-            'default_frame_name': 'Frame',
+            'default_frame_name': 'Layer',
 
-            'delete_frame_title': 'Delete frame',
-            'delete_frame_warning': 'Are you sure you want to delete frame \'${name}\'?',
-            'delete_frame_yes_button': 'Delete Frame',
+            'delete_frame_title': 'Delete layer',
+            'delete_frame_warning': 'Are you sure you want to delete layer \'${name}\'?',
+            'delete_frame_yes_button': 'Delete layer',
             'delete_frame_no_button': 'Cancel',
 
-            'rename_frame_title': 'Rename frame',
+            'rename_frame_title': 'Rename layer',
             'rename_frame_button': 'Rename',
             'rename_frame_new_name': 'New name',
 
@@ -60,7 +60,7 @@ const I18N = {
             'frame_dropdown_delete': 'Delete...',
             'frame_dropdown_child_frame': 'New Child',
             
-            'frame_list_new_frame': 'New Frame',
+            'frame_list_new_frame': 'New Layer',
             'frame_list_change_dimensions': 'Change Dimensions...',
             'frame_list_show_all': 'Show all',
             'frame_list_hide_all': 'Hide all',
@@ -87,7 +87,7 @@ const I18N = {
             'default_filename': 'sprites.json',
 
             'sprite_list_title': 'SPRITE LIST',
-            'frame_list_title': 'FRAME LIST',
+            'frame_list_title': 'LAYER LIST',
 
             'default_sprite_name': 'Sprite ${index}',
 

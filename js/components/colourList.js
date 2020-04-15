@@ -13,7 +13,7 @@ function createColourPicker(colour, isEmptyColour) {
     }
 
     elt.addEventListener('click', () => {
-        State.ColourState.colour = colour;
+        setColour(colour);
 
         if (State.ColourState.elt) {
             State.ColourState.elt.classList.remove('selected');
@@ -23,11 +23,12 @@ function createColourPicker(colour, isEmptyColour) {
     });
 
     State.elts.colourList.appendChild(elt);
-    State.ColourState.colours.push(colour);
+
+    addColour(colour);
 }
 
 function createColours(colours) {
-    State.ColourState.colours = [];
+    setColours([]);
     State.elts.colourList.innerHTML = '';
     createColourPicker('', true);
     colours.forEach(colour => createColourPicker(colour));

@@ -1,204 +1,4 @@
-const State = {
-    ColourState: {
-        colour: '',
-        elt: null,
-        colours: []
-    },
-    FrameState: {},
-    SpriteState: {},
-    DropdownState: {
-        dropdowns: []
-    },
-    AnimationState: {
-        controlsPopup: null,
-        controllers: {}
-    },
-    DragAndDrop: {
-        spriteList: null,
-        frameList: null,
-        spriteTab: null
-    },
-    ViewState: {
-        ctx: null,
-        pixelSize: 1,
-        lastMouse: { x: 0, y: 0 },
-        lastGridCoords: { x: 0, y: 0}
-    },
-    elts: {
-        colourList: null,
-        frameList: null,
-        pixelCanvas: null,
-        toolbar: null,
-        root: null,
-        fileInput: null,
-        tabbar: null,
-        spriteList: null,
-        spriteListTitle: null,
-        frameListTitle: null,
-        frameList: null,
-        canvasContainer: null
-    }
-};
 
-function initSpriteState() {
-    State.SpriteState = {
-        tabElt: null,
-        listElt: null,
-        nextId: 0,
-        sprite: null,
-        spriteIndex: null,
-        sprites: [],
-        open: [],
-        projectName: null
-    };
-}
-
-function initFrameState() {
-    State.FrameState = {
-        elts: [],
-        frameIndex: null
-    };
-}
-
-function setSelectedSprite(spriteId) {
-    State.SpriteState.sprite = spriteId;
-    State.SpriteState.spriteIndex = getSpriteIndexFromId(spriteId);
-
-    const sprite = getSprite();
-    if (sprite) {
-        State.FrameState.frameIndex = getFrameIndexFromId(sprite.frame);
-    }
-}
-
-function getSprite() {
-    return State.SpriteState.sprites[State.SpriteState.spriteIndex];
-}
-
-function getSpriteById(spriteId) {
-    for (let sprite of State.SpriteState.sprites) {
-        if (sprite.id === spriteId) {
-            return sprite;
-        }
-    }
-    return null;
-}
-
-function nextSpriteId() {
-    return State.SpriteState.nextId++;
-}
-
-function getSpriteIndexFromId(spriteId) {
-    for (let i = 0; i < State.SpriteState.sprites.length; i++) {
-        if (State.SpriteState.sprites[i].id === spriteId) {
-            return i;
-        }
-    }
-    return null;
-}
-
-function getFrames() {
-    const sprite = getSprite();
-
-    if (sprite) {
-        return sprite.frames;
-    }
-
-    return [];
-}
-
-function setFrames(frames) {
-    const sprite = getSprite();
-    if (sprite) {
-        sprite.frames = frames;
-    }
-}
-
-function getFrame() {
-    return getFrames()[getFrameIndex()] || { colours: [] };
-}
-
-function nextFrameId() {
-    const sprite = getSprite();
-    if (sprite) {
-        return sprite.nextFrameId++;
-    }
-    return 0;
-}
-
-function getFrameIndexFromId(frameId, customFrames) {
-    const frames = customFrames || getFrames();
-    for (let i = 0; i < frames.length; i++) {
-        let frame = frames[i];
-        if (frame.id === frameId) {
-            return i;
-        }
-    }
-    return null;
-}
-
-function getFrameById(frameId) {
-    for (let frame of getFrames()) {
-        if (frame.id === frameId) {
-            return frame;
-        }
-    }
-    return null;
-}
-
-function getFrameIndex() {
-    return State.FrameState.frameIndex;
-}
-
-function setSelectedFrame(frameId) {
-    const sprite = getSprite();
-    if (sprite) {
-        sprite.frame = frameId;
-        State.FrameState.frameIndex = getFrameIndexFromId(frameId);
-
-        const frame = getFrame();
-        if (frame.parentId === -1) {
-            frame.selectedChildId = -1;
-        } else {
-            const parentFrame = getFrameById(frame.parentId);
-            parentFrame.selectedChildId = frame.id;
-        }
-    }
-}
-
-function getFrameWidth() {
-    const sprite = getSprite();
-    if (sprite) {
-        return sprite.width;
-    }
-    return 0;
-}
-
-function setFrameWidth(width) {
-    const sprite = getSprite();
-    if (sprite) {
-        sprite.width = width;
-    }
-}
-
-function getFrameHeight() {
-    const sprite = getSprite();
-    if (sprite) {
-        return sprite.height;
-    }
-    return 0;
-}
-
-function setFrameHeight(height) {
-    const sprite = getSprite();
-    if (sprite) {
-        sprite.height = height;
-    }
-}
-
-function setPixelSize(pixelSize) {
-    State.ViewState.pixelSize = pixelSize;
-    localStorage.setItem('pixelSize', pixelSize);
-}
 
 function main() {
     initSpriteState();
@@ -214,12 +14,19 @@ function main() {
     State.elts.spriteList = document.getElementById('sprite_list');
     State.elts.spriteListTitle = document.getElementById('sprite_list_title');
     State.elts.frameListTitle = document.getElementById('frame_list_title');
+    State.elts.frameView = document.getElementById('frame_view');
     State.elts.canvasContainer = document.getElementById('canvas_container');
     State.elts.frameList = document.getElementById('frame_list');
+    State.elts.animationControls = document.getElementById('animation_controls');
+    State.elts.animationRowNames = document.getElementById('animation_row_names');
+    State.elts.animationRowFrames = document.getElementById('animation_row_frames');
+    State.elts.animationView = document.getElementById('animation_view');
 
     State.DragAndDrop.spriteList = createDragAndDropCategory('sprite_list');
     State.DragAndDrop.spriteTab = createDragAndDropCategory('sprite_tab');
     State.DragAndDrop.frameList = createDragAndDropCategory('frame_list');
+    State.DragAndDrop.animationView = createDragAndDropCategory('animation_view');
+    State.DragAndDrop.animationNodes = createDragAndDropCategory('animation_nodes');
 
     State.ViewState.pixelSize = parseInt(localStorage.getItem('pixelSize') || 30);
 
@@ -238,6 +45,4 @@ function main() {
 
     loadSpritesFromStorage();
     saveSpritesToStorage();
-
-    // openAnimationControls();
 }

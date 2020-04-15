@@ -1,34 +1,4 @@
 
-
-function createPixel(pixelRow, x, y) {
-    const elt = document.createElement('span');
-    elt.classList.add('pixel');
-    
-    elt.style.width = `${State.ViewState.pixelSize}px`;
-    elt.style.height = `${State.ViewState.pixelSize}px`;
-
-    updatePixelColour(elt, x, y);
-
-    function clickPixel() {
-        
-    }
-
-    elt.addEventListener('mousedown', (e) => {
-        if (e.buttons === 1) {
-            clickPixel();
-        }
-        e.preventDefault();
-    });
-    elt.addEventListener('mousemove', (e) => {
-        if (e.buttons === 1) {
-            clickPixel();
-        }
-    });
-    disableContextMenu(elt);
-
-    pixelRow.appendChild(elt);
-}
-
 function createPixelDisplay(checkScroll) {
     if (checkScroll) {
         const coords = getGridCoordinatesFromMouse(State.ViewState.lastMouse.x, State.ViewState.lastMouse.y);
@@ -36,18 +6,19 @@ function createPixelDisplay(checkScroll) {
         const rect = State.elts.pixelCanvas.getBoundingClientRect()
         const scaleX = State.elts.pixelCanvas.width / rect.width;
         const scaleY = State.elts.pixelCanvas.height / rect.height;
+        const pixelSize = getPixelSize();
         
-        const dx = (State.ViewState.lastGridCoords.x - coords.x) * State.ViewState.pixelSize / scaleX;
-        const dy = (State.ViewState.lastGridCoords.y - coords.y) * State.ViewState.pixelSize / scaleY;
+        const dx = (State.ViewState.lastGridCoords.x - coords.x) * pixelSize / scaleX;
+        const dy = (State.ViewState.lastGridCoords.y - coords.y) * pixelSize / scaleY;
 
         State.elts.canvasContainer.scrollBy(dx, dy);
 
     }
 
-    renderGrid(State.ViewState.ctx, getFrameWidth(), getFrameHeight(), State.ViewState.pixelSize);
+    renderGrid(State.ViewState.ctx, getFrameWidth(), getFrameHeight(), getPixelSize());
     if (State.ViewState.lastMouse) {
         const pixel = getPixelFromMouse(State.ViewState.lastMouse.x, State.ViewState.lastMouse.y);
-        hoverPixel(State.ViewState.ctx, pixel.x, pixel.y, State.ViewState.pixelSize);
+        hoverPixel(State.ViewState.ctx, pixel.x, pixel.y, getPixelSize());
     }
 }
 
@@ -55,9 +26,10 @@ function getGridCoordinatesFromMouse(mouseX, mouseY) {
     const rect = State.elts.pixelCanvas.getBoundingClientRect()
     const scaleX = State.elts.pixelCanvas.width / rect.width;
     const scaleY = State.elts.pixelCanvas.height / rect.height;
+    const pixelSize = getPixelSize();
 
-    return { x: (mouseX - rect.left) * scaleX / State.ViewState.pixelSize, 
-             y: (mouseY - rect.top) * scaleY / State.ViewState.pixelSize };
+    return { x: (mouseX - rect.left) * scaleX / pixelSize, 
+             y: (mouseY - rect.top) * scaleY / pixelSize };
 }
 
 function getPixelFromMouse(mouseX, mouseY) {
@@ -69,8 +41,8 @@ function clickPixel(x, y) {
     const frame = getFrame();
 
     if ((frame.visible || frame.id == getFrame().id) && !animationIsPlaying(frame)) {
-        getFrame().colours[y][x] = State.ColourState.colour;
-        renderPixel(State.ViewState.ctx, x, y, State.ViewState.pixelSize);
+        setFramePixel(x, y, getColour());
+        renderPixel(State.ViewState.ctx, x, y, getPixelSize());
         saveSpritesToStorage();
     }
 }
@@ -89,11 +61,11 @@ function initPixelDisplay() {
             State.ViewState.lastMouse.y = e.clientY;
             State.ViewState.lastGridCoords = getGridCoordinatesFromMouse(e.clientX, e.clientY);
 
-            setPixelSize(Math.max(Math.min(State.ViewState.pixelSize + (diff * 3), 300), 7));
+            setPixelSize(Math.max(Math.min(getPixelSize() + (diff * 3), 300), 7));
             createPixelDisplay(true);
+            e.stopImmediatePropagation();
+            e.preventDefault();
         }
-        e.stopImmediatePropagation();
-        e.preventDefault();
     });
 
     let lastPixel;
@@ -105,20 +77,20 @@ function initPixelDisplay() {
         State.ViewState.lastMouse.y = e.clientY;
 
         if (lastPixel) {
-            renderPixel(State.ViewState.ctx, lastPixel.x, lastPixel.y, State.ViewState.pixelSize);
+            renderPixel(State.ViewState.ctx, lastPixel.x, lastPixel.y, getPixelSize());
         }
 
         if (e.buttons === 1) {
             clickPixel(pixel.x, pixel.y);
         }
 
-        hoverPixel(State.ViewState.ctx, pixel.x, pixel.y, State.ViewState.pixelSize);
+        hoverPixel(State.ViewState.ctx, pixel.x, pixel.y, getPixelSize());
         lastPixel = pixel;
     });
 
     State.elts.pixelCanvas.addEventListener('mousedown', (e) => {
         const pixel = getPixelFromMouse(e.clientX, e.clientY);
         clickPixel(pixel.x, pixel.y);
-        hoverPixel(State.ViewState.ctx, pixel.x, pixel.y, State.ViewState.pixelSize);
+        hoverPixel(State.ViewState.ctx, pixel.x, pixel.y, getPixelSize());
     });
 }

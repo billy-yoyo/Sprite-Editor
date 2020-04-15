@@ -91,7 +91,6 @@ function createForm(opts) {
 
         if (opts.onsubmit) {
             const invalid = opts.onsubmit(data);
-            console.log(invalid);
             if (invalid && invalid.length) {
                 form.querySelectorAll('input').forEach((input) => {
                     if (invalid.indexOf(input.name) >= 0) {

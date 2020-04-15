@@ -156,8 +156,26 @@ body {
     display: flex;
     justify-content: start;
     align-items: start;
+    max-height: calc(70vh - 70px);
+    min-height: calc(70vh - 70px);
     width: 100%;
-    height: calc(100% - 35px);
+}
+
+.frame_view.full {
+    max-height: calc(100vh - 70px);
+    min-height: calc(100vh - 70px);
+}
+
+.animation_view {
+    width: 100%;
+    min-height: 30vh;
+    background: #2a2a2a;
+    display: flex;
+    flex-direction: column;
+}
+
+.animation_view.hidden {
+    display: none;
 }
 
 .list_view {
@@ -274,9 +292,10 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     align-items: flex-end;
     overflow-y: auto;
+    margin: auto;
 }
 
 .colour {
@@ -519,6 +538,16 @@ body {
     background: #414141;
 }
 
+.animation_main {
+    max-width: 100%;
+    max-height: calc(100% - 62px);
+    min-height: calc(100% - 62px);
+    overflow: auto;
+    display: flex;
+    margin-left: 40px;
+    margin-top: 10px;
+}
+
 .animation_controls {
     padding: 10px;
     display: flex;
@@ -564,6 +593,77 @@ body {
     border: 1px solid #00000000;
     width: 60px;
     flex-grow: 1;
+}
+
+.animation_row_names {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.animation_row_frames {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.animation_frame_nodes {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 5px;
+    min-height: 32px;
+    margin-left: 5px;
+}
+
+.animation_frame_name {
+    color: #BDBDBD;
+    background-color: #212121;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    border-radius: 3px;
+    width: calc(100%);
+    margin-bottom: 5px;
+    cursor: pointer;
+    box-sizing: border-box;
+    border: 1px solid #212121;
+}
+
+.animation_frame_name.selected {
+    border: 1px solid #515151;
+}
+
+.animation_frame_name:hover {
+    background-color: #313131;
+}
+
+.animation_frame_node {
+    background-color: #212121;
+    min-height: 32px;
+    min-width: 20px;
+    margin-right: 3px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #BDBDBD;
+    cursor: pointer;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+.animation_frame_node:hover {
+    background-color: #313131;
+}
+
+.animation_frame_node.selected {
+    border: 1px solid #515151;
+}
+
+
+.animation_frame_node.playing {
+    border: 1px solid #770000;
 }
 
 .crossed {

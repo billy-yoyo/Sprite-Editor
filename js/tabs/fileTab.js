@@ -25,8 +25,8 @@ function newSprite() {
                     nextFrameId: data.frames
                 };
 
-                State.SpriteState.sprites.push(sprite);
-                State.SpriteState.open.push(sprite.id);
+                addSprite(sprite);
+                addOpenSprite(sprite.id);
                 createSpriteTab(sprite);
                 setSelectedSprite(sprite.id);
 
@@ -53,7 +53,7 @@ function newProject() {
                 initSpriteState();
                 initFrameState();
 
-                State.SpriteState.projectName = name;
+                setProjectName(name);
 
                 createSpriteDisplay();
                 saveSpritesToStorage();
@@ -73,7 +73,7 @@ function renameProject() {
         onsubmit: (data) => {
             const name = data.name;
             if (name) {
-                State.SpriteState.projectName = name;
+                setProjectName(name);
 
                 updateDocumentTitle();
                 saveSpritesToStorage();

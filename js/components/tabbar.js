@@ -1,10 +1,8 @@
 function closeTab(sprite) {
-    const index = State.SpriteState.open.indexOf(sprite.id);
-    if (index >= 0) {
-        State.SpriteState.open.splice(index, 1);
-    }
+    const open = getOpenSprites();
+    removeSpriteTab(sprite);
 
-    setSelectedSprite(State.SpriteState.open[Math.min(State.SpriteState.open.length - 1, index)]);
+    setSelectedSprite(open[Math.min(open.length - 1, index)]);
     createSpriteDisplay();
     saveSpritesToStorage();
 }
@@ -36,7 +34,7 @@ function createSpriteTab(sprite) {
     elt.classList.add('tab');
     elt.id = 'tab_sprite_' + sprite.id;
 
-    if (State.SpriteState.sprite === sprite.id) {
+    if (getSpriteId() === sprite.id) {
         elt.classList.add('selected');
         State.SpriteState.tabElt = elt;
     }
@@ -56,7 +54,7 @@ function createSpriteTab(sprite) {
     elt.appendChild(closeButton);
 
     elt.addEventListener('click', () => {
-        if (State.SpriteState.sprite !== sprite.id) {
+        if (getSpriteId() !== sprite.id) {
             setSelectedSprite(sprite.id);
             saveSpritesToStorage();
 
@@ -73,7 +71,7 @@ function createSpriteTab(sprite) {
         elt: elt,
         data: sprite,
         ondrag: () => {
-            if (State.SpriteState.sprite !== sprite.id) {
+            if (getSpriteId() !== sprite.id) {
                 setSelectedSprite(sprite.id);
                 setSelectedSpriteTab(sprite);
                 setSelectedSpriteListEntry(sprite);
@@ -83,10 +81,10 @@ function createSpriteTab(sprite) {
         },
         ondrop: (dragSprite) => {
             if (dragSprite.id !== sprite.id) {
-                const currentOpenIndex = State.SpriteState.open.indexOf(dragSprite.id);
-                const targetOpenIndex = State.SpriteState.open.indexOf(sprite.id);
+                const currentOpenIndex = getOpenSprites().indexOf(dragSprite.id);
+                const targetOpenIndex = getOpenSprites().indexOf(sprite.id);
     
-                moveIndexNextTo(State.SpriteState.open, currentOpenIndex, targetOpenIndex);
+                moveSpriteTabNextTo(currentOpenIndex, targetOpenIndex);
                 setSelectedSprite(dragSprite.id);
                 createSpriteTabs();
                 saveSpritesToStorage();
@@ -98,7 +96,7 @@ function createSpriteTab(sprite) {
 function createSpriteTabs() {
     State.elts.tabbar.innerHTML = '';
 
-    State.SpriteState.open.forEach((spriteId) => {
+    getOpenSprites().forEach((spriteId) => {
         const sprite = getSpriteById(spriteId);
         if (sprite) {
             createSpriteTab(sprite);
@@ -107,7 +105,7 @@ function createSpriteTabs() {
 }
 
 function updateDocumentTitle() {
-    document.title = i18n('page_title', { projectName: State.SpriteState.projectName });
+    document.title = i18n('page_title', { projectName: getProjectName() });
 }
 
 function createSpriteDisplay() {

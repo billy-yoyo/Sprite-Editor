@@ -193,3 +193,10 @@ function findNearestNeighbour(arr, index, condition) {
 
     return null;
 }
+
+function updateText(elementId, text) {
+    const elt = document.getElementById(elementId);
+    if (elt) {
+        elt.innerText = text;
+    }
+}

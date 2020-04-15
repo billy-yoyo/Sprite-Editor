@@ -29,10 +29,9 @@ function createEmptyFrame(name, id, width, height) {
 }
 
 function duplicateFrameBelow(frame) {
-    const frames = getFrames();
     const newFrame = copyFrame(frame);
 
-    frames.splice(getFrameIndexFromId(frame.id) + 1, 0, newFrame);
+    insertFrame(frame, getFrameIndexFromId(frame.id) + 1);
     setSelectedFrame(newFrame.id);
 
     createFrameDisplay();
@@ -40,24 +39,22 @@ function duplicateFrameBelow(frame) {
 }
 
 function newFrameChild(frame) {
-    const frames = getFrames();
     const newFrame = copyFrame(frame);
 
     newFrame.parentId = frame.id;
     newFrame.name = frame.name + ` (${getChildFrames(frame.id).length + 1})`;
     newFrame.visible = false;
 
-    frames.push(newFrame);
+    addFrame(newFrame);
 
     createFrameDisplay();
     saveSpritesToStorage();
 }
 
 function newFrame() {
-    const frames = getFrames();
     const newFrame = createEmptyFrame();
 
-    frames.push(newFrame);
+    addFrame(newFrame);
     setSelectedFrame(newFrame.id)
 
     createFrameDisplay();
@@ -67,11 +64,10 @@ function newFrame() {
 function deleteFrame(frame) {
     const frames = getFrames();
     const frameIndex = getFrameIndexFromId(frame.id);
-    const children = getChildFrames(frame.id);
 
     let neighbourId;
 
-    if (frameIndex == State.FrameState.frameIndex) {
+    if (frameIndex == getFrameIndex()) {
         if (frame.parentId === -1) {
             const neighbour = findNearestNeighbour(frames, frameIndex, (frame) => frame.parentId === -1);
             if (neighbour) {
@@ -91,14 +87,9 @@ function deleteFrame(frame) {
         }
     }
 
-    frames.splice(frameIndex, 1);
+    removeFrame(frame);
 
-    children.forEach((child) => {
-        const childIndex = getFrameIndexFromId(child.id);
-        frames.splice(childIndex, 1);
-    });
-
-    if (frameIndex == State.FrameState.frameIndex && neighbourId !== undefined) {
+    if (frameIndex == getFrameIndex() && neighbourId !== undefined) {
         setSelectedFrame(neighbourId);
     }
 
@@ -117,19 +108,17 @@ function askDeleteFrame(frame) {
     });
 }
 
-function renameFrame(frame) {
+function askRenameFrame(frame) {
     spawnFormDialog({
         title: i18n('rename_frame_title'),
         buttonText: i18n('rename_frame_button'),
         rows: [ [ { label: i18n('rename_frame_new_name'), type: 'text', id: 'name', autofocus: true } ] ],
         onsubmit: (data) => {
-            if (data.name && !data.name.contains('\\')) {
-                frame.name = data.name;
+            if (data.name && !data.name.includes('\\')) {
+                renameFrame(frame, data.name);
 
-                const frameText = document.getElementById('frame_' + frame.id + '_text');
-                if (frameText) {
-                    frameText.innerText = data.name;
-                }
+                updateText(`frame_${frame.id}_text`, data.name);
+                updateText(`animation_frame_${frame.id}_text`, data.name);
 
                 saveSpritesToStorage();
             } else {
@@ -143,24 +132,75 @@ function renameFrame(frame) {
 function createFrameDropdownActions(frame, toggle) {
     return [
         { text: frame.visible ? i18n('frame_dropdown_hide'): i18n('frame_dropdown_show'), 
-            action: () => toggleFrameVisibility(frame, toggle),
+            action: () => toggleFrameVisibility(frame),
             condition: () => !!toggle },
-        { text: i18n('frame_dropdown_rename'), action: () => renameFrame(frame) },
+        { text: i18n('frame_dropdown_rename'), action: () => askRenameFrame(frame) },
         { text: i18n('frame_dropdown_duplicate'), action: () => duplicateFrameBelow(frame) },
         { text: i18n('frame_dropdown_child_frame'), action: () => newFrameChild(frame), condition: () => frame.parentId === -1 },
         { text: i18n('frame_dropdown_delete'), action: () => askDeleteFrame(frame) }
     ];
 }
 
-function toggleFrameVisibility(frame, toggle) {
-    frame.visible = !frame.visible;
-    if (frame.visible) {
-        toggle.classList.add('on');
-    } else {
-        toggle.classList.remove('on');
+function toggleFrameVisibility(frame) {
+    const toggle = document.getElementById(`frame_${frame.id}_toggle`);
+    if (toggle) {
+        if (frame.visible) {
+            toggle.classList.add('on');
+        } else {
+            toggle.classList.remove('on');
+        }
     }
+    setFrameVisiblity(frame, !frame.visible);
     createPixelDisplay();
     saveSpritesToStorage();
+}
+
+function dragAndDropFrame(dragFrame, frame) {
+    if (dragFrame.id !== frame.id) {
+        const currentOpenIndex = getFrameIndexFromId(dragFrame.id)
+        const targetOpenIndex = getFrameIndexFromId(frame.id);
+
+        if (dragFrame.parentId === -1 && frame.parentId !== -1) {
+            if (dragFrame.id === frame.parentId) {
+                getChildFrames(dragFrame.id).forEach((child) => { child.parentId = frame.id; });
+
+                setFrameParent(frame, -1);
+                setFrameVisibility(frame, dragFrame.visible);
+                setFrameParent(dragFrame, frame.id);
+                setFrameVisibility(dragFrame, false);
+
+                swapFramePositions(currentOpenIndex, targetOpenIndex);
+            } else {
+                setFrameParent(dragFrame, frame.parentId);
+                setFrameVisibility(dragFrame, false);
+
+                moveFrameNextTo(currentOpenIndex, targetOpenIndex);
+            }
+        } else if (dragFrame.parentId !== -1 && frame.parentId === -1) {
+            if (dragFrame.parentId === frame.id) {
+                getChildFrames(frame.id).forEach((child) => { child.parentId = dragFrame.id; });
+
+                setFrameParent(dragFrame, -1);
+                setFrameVisibility(dragFrame, frame.visible);
+                setFrameParent(frame, dragFrame.id);
+                setFrameVisibility(frame, false);
+
+                swapFramePositions(currentOpenIndex, targetOpenIndex);
+            } else {
+                setFrameParent(dragFrame, -1);
+                moveFrameNextTo(currentOpenIndex, targetOpenIndex);
+            }
+        } else if (dragFrame.parentId !== -1 && frame.parentId !== -1 && dragFrame.parentId !== frame.parentId) {
+            setFrameParent(dragFrame, frame.parentId);
+            moveFrameNextTo(currentOpenIndex, targetOpenIndex);
+        } else {
+            moveFrameNextTo(currentOpenIndex, targetOpenIndex);
+        }
+
+        setSelectedFrame(dragFrame.id);
+        saveSpritesToStorage();
+        createFrameDisplay();
+    }
 }
 
 function createFrameListEntry(frame) {
@@ -171,14 +211,15 @@ function createFrameListEntry(frame) {
         elt.classList.add('child');
     }
 
-    elt.id = 'frame_' + frame.id;
+    elt.id = `frame_${frame.id}`;
 
-    elt.appendChild(createTextSpan(frame.name, 'frame_' + frame.id + '_text'));
+    elt.appendChild(createTextSpan(frame.name, `frame_${frame.id}_text`));
 
     let toggle = null;
     if (frame.parentId === -1) {
         toggle = document.createElement('div');
         toggle.classList.add('list_item_toggle');
+        toggle.id = `frame_${frame.id}_toggle`;
 
         if (frame.visible) {
             toggle.classList.add('on');
@@ -207,63 +248,18 @@ function createFrameListEntry(frame) {
         saveSpritesToStorage();
     });
 
-    replaceContextMenu(elt, 'horizontal', () => createFrameDropdownActions(frame, toggle));
+    replaceContextMenu(elt, 'horizontal', () => createFrameDropdownActions(frame, frame.parentId === -1));
 
     enableDragAndDrop({
         category: State.DragAndDrop.frameList,
         elt: elt,
         data: frame,
         ondrop: (dragFrame) => {
-            if (dragFrame.id !== frame.id) {
-                const currentOpenIndex = getFrameIndexFromId(dragFrame.id)
-                const targetOpenIndex = getFrameIndexFromId(frame.id);
-
-                if (dragFrame.parentId === -1 && frame.parentId !== -1) {
-                    if (dragFrame.id === frame.parentId) {
-                        getChildFrames(dragFrame.id).forEach((child) => { child.parentId = frame.id; });
-                        frame.parentId = -1;
-                        frame.visible = dragFrame.visible;
-                        dragFrame.parentId = frame.id;
-                        dragFrame.visible = false;
-
-                        swapIndexes(getFrames(), currentOpenIndex, targetOpenIndex);
-                    } else {
-                        dragFrame.parentId = frame.parentId;
-                        dragFrame.visible = false;
-                        moveIndexNextTo(getFrames(), currentOpenIndex, targetOpenIndex);
-                    }
-                } else if (dragFrame.parentId !== -1 && frame.parentId === -1) {
-                    if (dragFrame.parentId === frame.id) {
-                        getChildFrames(frame.id).forEach((child) => { child.parentId = dragFrame.id; });
-                        dragFrame.parentId = -1;
-                        dragFrame.visible = frame.visible;
-                        frame.parentId = dragFrame.id;
-                        frame.visible = false;
-
-                        swapIndexes(getFrames(), currentOpenIndex, targetOpenIndex);
-                    } else {
-                        dragFrame.parentId = -1;
-                        moveIndexNextTo(getFrames(), currentOpenIndex, targetOpenIndex);
-                    }
-                } else if (dragFrame.parentId !== -1 && frame.parentId !== -1 && dragFrame.parentId !== frame.parentId) {
-                    dragFrame.parentId = frame.parentId;
-                    moveIndexNextTo(getFrames(), currentOpenIndex, targetOpenIndex);
-                } else {
-                    moveIndexNextTo(getFrames(), currentOpenIndex, targetOpenIndex);
-                }
-
-                setSelectedFrame(dragFrame.id);
-                saveSpritesToStorage();
-                createFrameDisplay();
-            }
+            dragAndDropFrame(dragFrame, frame);
         }
     });
 
     State.elts.frameList.appendChild(elt);
-}
-
-function getChildFrames(parentId) {
-    return getFrames().filter((frame) => frame.parentId === parentId);
 }
 
 function createFrames() {
@@ -283,12 +279,12 @@ function createFrames() {
 function createFrameDisplay() {
     createFrames();
     createPixelDisplay();
-    updateAnimationControls();
+    createAnimationView();
 }
 
 function setAllFrameVisiblityTo(visible) {
     getFrames().forEach((frame) => {
-        frame.visible = visible;
+        setFrameVisibility(frame, visible);
     });
 
     createFrameDisplay();

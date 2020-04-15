@@ -14,7 +14,7 @@ function getFramesData(frames) {
         data += String.fromCharCode(frame.visible);
         frame.colours.forEach((row) => {
             row.forEach((colour) => {
-                let index = State.ColourState.colours.indexOf(colour);
+                let index = getColours().indexOf(colour);
                 data += String.fromCharCode(Math.max(0, index));
             });
         });
@@ -62,7 +62,7 @@ function loadSprite(spriteData) {
         let visible = next() == 1;
 
         let colours = new Array(spriteData.height).fill().map(() => 
-            new Array(spriteData.width).fill().map(() => State.ColourState.colours[next()] || '')
+            new Array(spriteData.width).fill().map(() => getColours()[next()] || '')
         );
 
         frames.push({

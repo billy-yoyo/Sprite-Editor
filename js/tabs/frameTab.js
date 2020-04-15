@@ -1,5 +1,14 @@
 
 
+/**
+ * Changes the frame dimensions, trimming or adding blank pixels off the bottom & right as necessary
+ * 
+ * note this function techinically breaks the mutator-state management rules and changes sprite.frames
+ * directly, but I'm allowing it since it's function is fairly unique.
+ * 
+ * @param {number} width the new width 
+ * @param {number} height the new height 
+ */
 function changeFrameDimensions(width, height) {
     const sprite = getSprite();
 
